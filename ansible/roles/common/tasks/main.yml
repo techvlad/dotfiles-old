@@ -1,0 +1,72 @@
+- name: Add Vim PPA
+  become: yes
+  apt_repository:
+    repo: 'ppa:jonathonf/vim'
+    state: present
+
+- name: Add Git PPA
+  become: yes
+  apt_repository:
+    repo: 'ppa:git-core/ppa'
+    state: present
+
+- name: Update cache for packages
+  become: yes
+  apt:
+    update_cache: true
+
+- name: Install packages
+  become: yes
+  apt:
+    name:
+      - htop
+      - curl
+      - wget 
+      - git
+      - vim
+      - zsh
+      - screenfetch
+      - jq
+      - xclip
+    state: latest
+
+- name: Install Node.js
+  become: yes
+  snap:
+    name:
+      - node
+    channel: 12/stable
+    classic: yes
+
+- name: Install addition software
+  become: yes
+  snap:
+    name:
+      - telegram-desktop
+      - chromium
+      - zoom-client
+      - mattermost-desktop
+      - postman
+
+- name: Install IDEs
+  become: yes
+  snap:
+    name:
+      - webstorm
+      - intellij-idea-ultimate
+      - sublime-text
+      - code
+    classic: yes
+
+- name: Create SSH directory
+  file:
+    path: ~/.ssh
+    state: directory
+
+- name: Generate SSH Keys
+  openssh_keypair:
+    path: "~/.ssh/id_rsa"
+    type: rsa
+    size: 4096
+    state: present
+    force: no
