@@ -16,6 +16,26 @@
     repo: ppa:mmstick76/alacritty
     state: present
 
+- name: Add Flat Remix ICON PPA
+  become: yes
+  apt_repository:
+    repo: ppa:daniruiz/flat-remix
+    state: present
+
+- name: Does the Google apt file exist?
+  command: test -f /etc/apt/sources.list.d/google-chrome.list
+  register: google_apt_exists
+  ignore_errors: True
+
+- name: Add Google Chrome key
+  become: yes
+  shell: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+  when: google_apt_exists.rc == 1
+
+- name: Add Google Chrome repo
+  become: yes
+  copy: content="deb http://dl.google.com/linux/chrome/deb/ stable main" dest=/etc/apt/sources.list.d/google-chrome.list owner=root group=root mode=644
+  when: google_apt_exists.rc == 1
 
 - name: Update cache for packages
   become: yes
@@ -37,9 +57,15 @@
       - ca-certificates
       - gnupg-agent
       - software-properties-common
-      - git
+      - arc-theme
+      - mpv
+      - vlc
+      - gnome-tweak-tool
       - vim
+      - git
       - alacritty
+      - flat-remix
+      - google-chrome-stable
     state: latest
 
 - name: Install Node.js
@@ -66,6 +92,22 @@
   become: yes
   apt:
     name: docker-ce
+
+- name: Install Docker compose
+  become: yes
+  shell: |
+    if ! [ -f /usr/local/bin/docker-compose ]; then
+      curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      chmod +x /usr/local/bin/docker-compose
+
+      ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+      curl -L https://raw.githubusercontent.com/docker/compose/1.25.5/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
+
+      echo "Installed docker-compose"
+    fi
+    echo "Docker compose installed"
+
+    exit 0
 
 - name: Install addition software
   become: yes
