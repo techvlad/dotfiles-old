@@ -1,19 +1,26 @@
 - name: Add Vim PPA
   become: yes
   apt_repository:
-    repo: 'ppa:jonathonf/vim'
+    repo: ppa:jonathonf/vim
     state: present
 
 - name: Add Git PPA
   become: yes
   apt_repository:
-    repo: 'ppa:git-core/ppa'
+    repo: ppa:git-core/ppa
     state: present
+
+- name: Add Alacritty PPA
+  become: yes
+  apt_repository:
+    repo: ppa:mmstick76/alacritty
+    state: present
+
 
 - name: Update cache for packages
   become: yes
   apt:
-    update_cache: true
+    update_cache: yes
 
 - name: Install packages
   become: yes
@@ -22,12 +29,17 @@
       - htop
       - curl
       - wget 
-      - git
-      - vim
       - zsh
       - screenfetch
       - jq
       - xclip
+      - apt-transport-https 
+      - ca-certificates
+      - gnupg-agent
+      - software-properties-common
+      - git
+      - vim
+      - alacritty
     state: latest
 
 - name: Install Node.js
@@ -37,6 +49,23 @@
       - node
     channel: 12/stable
     classic: yes
+
+- name: Add Docker GPG apt key
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  become: yes
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Install Docker
+  become: yes
+  apt:
+    name: docker-ce
 
 - name: Install addition software
   become: yes
@@ -62,6 +91,8 @@
   become: yes
   user:
     name: hex
+    groups: docker
+    append: yes
     shell: /bin/zsh
     generate_ssh_key: yes
     ssh_key_bits: 4096
