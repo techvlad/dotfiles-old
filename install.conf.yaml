@@ -1,0 +1,14 @@
+- defaults:
+    link:
+      relink: true
+
+- link:
+    ~/.config/alacritty/alacritty.yml: alacritty.yml
+
+- create:
+    - ~/.config/alacritty
+    - ~/Sandbox
+    - ~/.fonts
+
+# - shell:
+  # - [git submodule update --init --recursive, Installing submodules]

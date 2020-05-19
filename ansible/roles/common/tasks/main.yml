@@ -57,6 +57,8 @@
       - ca-certificates
       - gnupg-agent
       - software-properties-common
+      - redis-tools
+      - ripgrep
       - arc-theme
       - mpv
       - vlc
@@ -109,6 +111,14 @@
 
     exit 0
 
+- name: Check for installed Oh My ZSH
+  command: test -d ~/.oh-my-zsh
+  register: ohmyzsh_result
+
+- name: Install Oh My ZSH
+  when: ohmyzsh_result.rc == 1
+  shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 - name: Install addition software
   become: yes
   snap:
@@ -118,6 +128,7 @@
       - zoom-client
       - mattermost-desktop
       - postman
+      - ngrok
 
 - name: Install IDEs
   become: yes
